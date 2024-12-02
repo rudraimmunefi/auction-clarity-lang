@@ -8,7 +8,6 @@
 
 (define-public (transfer (amount uint) (sender principal) (recipient principal) (memo (optional (buff 34)))) 
     (begin
-        (asserts! (is-eq tx-sender contract-caller) err-not-owner)
         (try! (ft-transfer? auc-token amount sender recipient))
         (match memo print-var (print print-var) 0x)
         (ok true)
