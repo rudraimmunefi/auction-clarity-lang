@@ -9,9 +9,7 @@
                 (unwrap! (contract-call? .aucToken transfer amount tx-sender owner (some 0x)) (err "error transferring tokens"))
                 (ok true)
             )
-            (begin
-                (err "not enough tokens")
-            )
+            (err "not enough tokens")
         )
     )
 )
@@ -20,3 +18,12 @@
     (map-get? stakedTokens {account: address})
 )
 
+(define-public (withdraw) 
+    (let ((stake (unwrap! (map-get? stakedTokens {account : tx-sender}) (err "error fetching stakes")))) 
+        (let ((stakedAmount (get stakedAmount stake)))
+            (unwrap! (contract-call? .aucToken transfer stakedAmount owner tx-sender (some 0x)) (err "Token transfer failed"))
+            (map-delete stakedTokens {account: tx-sender})
+            (ok true)
+        )
+    )
+)
