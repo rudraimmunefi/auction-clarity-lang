@@ -1,18 +1,17 @@
 (define-map stakedTokens { account: principal } { stakedAmount: uint })
+(define-constant owner tx-sender)
 
 (define-public (stakeToken (amount uint)) 
-    (let ((balance (unwrap! (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.aucToken get-balance tx-sender) (err "error fetching balance"))))
-        (match (if (>= balance amount)
-                   (ok (map-insert stakedTokens {account: tx-sender} {stakedAmount: amount}))
-                   (err "not enough tokens"))
-            success 
+    (let ((balance (unwrap! (contract-call? .aucToken get-balance tx-sender) (err "error fetching balance"))))
+        (if (>= balance amount)
             (begin
-                (print "Tokens staked successfully!")
-                (ok success))
-            error 
+                (map-insert stakedTokens {account: tx-sender} {stakedAmount: amount})
+                (unwrap! (contract-call? .aucToken transfer amount tx-sender owner (some 0x)) (err "error transferring tokens"))
+                (ok true)
+            )
             (begin
-                (print "Error staking tokens.")
-                (err error))
+                (err "not enough tokens")
+            )
         )
     )
 )
