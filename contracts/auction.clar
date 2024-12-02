@@ -35,3 +35,10 @@
     )
 )
 
+(define-read-only (get-current-block-height) 
+    (ok stacks-block-height)
+)
+
+(define-read-only (get-current-time) 
+    (ok (unwrap-panic (get-stacks-block-info? time (- stacks-block-height u1))))
+)
