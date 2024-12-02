@@ -1,4 +1,5 @@
-(define-map stakedTokens { account: principal } { stakedAmount: uint })
+(define-map stakedTokens { account: principal } { stakedAmount: uint } )
+(define-map rewards { account: principal } { reward: (tuple (accumulated_rewards uint) (last_withdrawal_time uint)) })
 (define-constant owner tx-sender)
 
 (define-public (stakeToken (amount uint)) 
@@ -27,3 +28,10 @@
         )
     )
 )
+
+(define-read-only (get-owner) 
+    (begin 
+        (ok owner)
+    )
+)
+
